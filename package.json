@@ -19,6 +19,7 @@
     "d3": "^7.4.4",
     "express": "^4.18.1",
     "font-awesome": "^4.7.0",
+    "fs-ext": "^2.0.0",
     "glob": "^7.1.6",
     "helmet": "^3.23.3",
     "iniparser": "https://github.com/awick/node-iniparser/tarball/master",
@@ -39,6 +40,7 @@
     "request-promise": "^4.2.6",
     "sanitize-html": "^2.7.0",
     "save-svg-as-png": "^1.4.17",
+    "serve-favicon": "^2.5.0",
     "splunk-sdk": "^1.9.0",
     "stylus": "^0.54.8",
     "unzipper": "^0.10.11",
@@ -58,7 +60,8 @@
     "viewer:bundle": "webpack --progress --config viewer/vueapp/build/webpack.dev.conf.js",
     "viewer:start": "cd viewer && node viewer.js -c ../config.ini.sample",
     "previewer:start": "npm run viewer:build",
-    "previewer:dev": "(cd viewer && node addUser.js -c ../tests/config.test.ini -n testuser admin admin admin --admin --packetSearch --createOnly)",
+    "dev": "webpack-dev-server  --progress --config viewer/vueapp/build/webpack.dev.conf.js",
+    "previewer:dev": "(cd viewer)",
     "viewer:dev": "(cd viewer && NODE_ENV=development nodemon viewer.js -c ../tests/config.test.ini -n testuser) & webpack --watch --progress --config viewer/vueapp/build/webpack.dev.conf.js",
     "viewer:test": "(cd viewer && NODE_ENV=development nodemon viewer.js --debug -c ../tests/config.test.ini -n test) & webpack --watch --progress --config viewer/vueapp/build/webpack.dev.conf.js",
     "viewer:testuserdebug": "(cd viewer && NODE_ENV=development nodemon viewer.js -c ../tests/config.test.ini -n testuser --debug) & webpack --watch --progress --config viewer/vueapp/build/webpack.dev.conf.js",
@@ -148,7 +151,7 @@
     "webpack": "^5.23.0",
     "webpack-bundle-analyzer": "^4.4.0",
     "webpack-cli": "^4.8.0",
-    "webpack-dev-server": "^4.3.1",
+    "webpack-dev-server": "^4.8.1",
     "webpack-merge": "^5.7.3"
   }
 }

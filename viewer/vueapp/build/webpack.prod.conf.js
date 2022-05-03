@@ -27,7 +27,8 @@ const webpackConfig = merge(baseWebpackConfig, {
   mode: 'production',
   devtool: config.build.productionSourceMap ? config.build.devtool : false,
   performance: {
-    maxAssetSize: 4000000
+    maxEntrypointSize: 10000000,
+    maxAssetSize: 30000000
   },
   optimization: {
     runtimeChunk: 'single', // enable 'runtime' chunk

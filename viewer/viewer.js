@@ -2490,26 +2490,26 @@ process.on('unhandledRejection', (reason, p) => {
   // application specific logging, throwing an error, or other logic here
 });
 
-Db.initialize({
-  host: internals.elasticBase,
-  prefix: internals.prefix,
-  usersHost: Config.getArray('usersElasticsearch', ','),
-  // The default for usersPrefix should be '' if this is a multiviewer, otherwise Db.initialize will figure out
-  usersPrefix: Config.get('usersPrefix', Config.get('multiES', false) ? '' : undefined),
-  nodeName: Config.nodeName(),
-  hostName: Config.hostName(),
-  esClientKey: Config.get('esClientKey', null),
-  esClientCert: Config.get('esClientCert', null),
-  esClientKeyPass: Config.get('esClientKeyPass', null),
-  multiES: Config.get('multiES', false),
-  insecure: Config.insecure,
-  ca: Config.getCaTrustCerts(Config.nodeName()),
-  requestTimeout: Config.get('elasticsearchTimeout', 300),
-  esProfile: Config.esProfile,
-  debug: Config.debug,
-  esApiKey: Config.get('elasticsearchAPIKey', null),
-  usersEsApiKey: Config.get('usersElasticsearchAPIKey', null),
-  esBasicAuth: Config.get('elasticsearchBasicAuth', null),
-  usersEsBasicAuth: Config.get('usersElasticsearchBasicAuth', null),
-  cronQueries: Config.get('cronQueries', false)
-}, main);
+// Db.initialize({
+//   host: internals.elasticBase,
+//   prefix: internals.prefix,
+//   usersHost: Config.getArray('usersElasticsearch', ','),
+//   // The default for usersPrefix should be '' if this is a multiviewer, otherwise Db.initialize will figure out
+//   usersPrefix: Config.get('usersPrefix', Config.get('multiES', false) ? '' : undefined),
+//   nodeName: Config.nodeName(),
+//   hostName: Config.hostName(),
+//   esClientKey: Config.get('esClientKey', null),
+//   esClientCert: Config.get('esClientCert', null),
+//   esClientKeyPass: Config.get('esClientKeyPass', null),
+//   multiES: Config.get('multiES', false),
+//   insecure: Config.insecure,
+//   ca: Config.getCaTrustCerts(Config.nodeName()),
+//   requestTimeout: Config.get('elasticsearchTimeout', 300),
+//   esProfile: Config.esProfile,
+//   debug: Config.debug,
+//   esApiKey: Config.get('elasticsearchAPIKey', null),
+//   usersEsApiKey: Config.get('usersElasticsearchAPIKey', null),
+//   esBasicAuth: Config.get('elasticsearchBasicAuth', null),
+//   usersEsBasicAuth: Config.get('usersElasticsearchBasicAuth', null),
+//   cronQueries: Config.get('cronQueries', false)
+// }, main);
