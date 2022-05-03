@@ -67,7 +67,7 @@ const { internals } = require('./internals')(app, Config);
 const ViewerUtils = require('./viewerUtils')(Config, Db, internals);
 const notifierAPIs = require('./apiNotifiers')(Config, Db, internals);
 const sessionAPIs = require('./apiSessions')(Config, Db, internals, ViewerUtils);
-const connectionAPIs = require('./apiConnections')(Config, Db, ViewerUtils, sessionAPIs);
+// const connectionAPIs = require('./apiConnections')(Config, Db, ViewerUtils, sessionAPIs);
 const statsAPIs = require('./apiStats')(Config, Db, internals, ViewerUtils);
 const huntAPIs = require('./apiHunts')(Config, Db, internals, notifierAPIs, sessionAPIs, ViewerUtils);
 const userAPIs = require('./apiUsers')(Config, Db, internals, ViewerUtils);
@@ -1813,20 +1813,7 @@ app.post( // delete data endpoint
   sessionAPIs.deleteData
 );
 
-// connections apis -----------------------------------------------------------
-app.getpost( // connections endpoint (POST or GET) - uses fillQueryFromBody to
-  // fill the query parameters if the client uses POST to support POST and GET
-  ['/api/connections', '/connections.json'],
-  [ArkimeUtil.noCacheJson, recordResponseTime, fillQueryFromBody, logAction('connections'), setCookie],
-  connectionAPIs.getConnections
-);
 
-app.getpost( // connections csv endpoint (POST or GET) - uses fillQueryFromBody to
-  // fill the query parameters if the client uses POST to support POST and GET
-  ['/api/connections[/.]csv', '/connections.csv'],
-  [fillQueryFromBody, logAction('connections.csv')],
-  connectionAPIs.getConnectionsCSV
-);
 
 // hunt apis ------------------------------------------------------------------
 app.get( // hunts endpoint
@@ -2378,86 +2365,86 @@ ${cq.description}
 // MAIN
 // ============================================================================
 async function main () {
-  if (!fs.existsSync(path.join(__dirname, '/vueapp/dist/index.html')) && app.settings.env !== 'development') {
-    console.log('WARNING - ./vueapp/dist/index.html missing - The viewer app must be run from inside the viewer directory');
-  }
+  // if (!fs.existsSync(path.join(__dirname, '/vueapp/dist/index.html')) && app.settings.env !== 'development') {
+  //   console.log('WARNING - ./vueapp/dist/index.html missing - The viewer app must be run from inside the viewer directory');
+  // }
 
-  Db.checkVersion(MIN_DB_VERSION, Config.get('passwordSecret') !== undefined);
+  // // Db.checkVersion(MIN_DB_VERSION, Config.get('passwordSecret') !== undefined);
 
-  try {
-    const health = await Db.healthCache();
-    internals.clusterName = health.cluster_name;
-  } catch (err) {
-    console.log('ERROR - fetching ES health', err);
-  }
+  // try {
+  //   const health = await Db.healthCache();
+  //   internals.clusterName = health.cluster_name;
+  // } catch (err) {
+  //   console.log('ERROR - fetching ES health', err);
+  // }
 
-  try {
-    const { body: info } = await Db.nodesStats({
-      metric: 'jvm,process,fs,os,indices,thread_pool'
-    });
-    info.nodes.timestamp = new Date().getTime();
-    internals.previousNodesStats.push(info.nodes);
-  } catch (err) {
-    console.log('ERROR - fetching ES nodes stats', err);
-  }
+  // try {
+  //   const { body: info } = await Db.nodesStats({
+  //     metric: 'jvm,process,fs,os,indices,thread_pool'
+  //   });
+  //   info.nodes.timestamp = new Date().getTime();
+  //   internals.previousNodesStats.push(info.nodes);
+  // } catch (err) {
+  //   console.log('ERROR - fetching ES nodes stats', err);
+  // }
 
-  setFieldLocals();
-  setInterval(setFieldLocals, 2 * 60 * 1000);
+  // setFieldLocals();
+  // setInterval(setFieldLocals, 2 * 60 * 1000);
 
-  loadPlugins();
+  // loadPlugins();
 
-  const pcapWriteMethod = Config.get('pcapWriteMethod');
-  const writer = internals.writers[pcapWriteMethod];
-  if (!writer || writer.localNode === true) {
-    expireCheckAll();
-    setInterval(expireCheckAll, 60 * 1000);
-  }
+  // const pcapWriteMethod = Config.get('pcapWriteMethod');
+  // const writer = internals.writers[pcapWriteMethod];
+  // if (!writer || writer.localNode === true) {
+  //   expireCheckAll();
+  //   setInterval(expireCheckAll, 60 * 1000);
+  // }
 
-  createRightClicks();
-  setInterval(createRightClicks, 150 * 1000); // Check every 2.5 minutes
+  // createRightClicks();
+  // setInterval(createRightClicks, 150 * 1000); // Check every 2.5 minutes
 
-  if (Config.get('cronQueries', false)) { // this viewer will process the cron queries
-    console.log('This node will process Periodic Queries, delayed by', internals.cronTimeout, 'seconds');
-    setInterval(internals.processCronQueries, 60 * 1000);
-    setTimeout(internals.processCronQueries, 1000);
-    setInterval(huntAPIs.processHuntJobs, 10000);
-  } else if (!Config.get('multiES', false)) {
-    const info = await Db.getQueriesNode();
-    if (info.node === undefined) {
-      console.log('WARNING - No cronQueries=true found, cron/hunts might be broken');
-    } else if (Date.now() - info.updateTime > 2 * 60 * 1000) {
-      console.log(`WARNING - cronQueries=true node '${info.node}' hasn't checked in lately, cron/hunts might be broken`);
-    }
-  }
+  // if (Config.get('cronQueries', false)) { // this viewer will process the cron queries
+  //   console.log('This node will process Periodic Queries, delayed by', internals.cronTimeout, 'seconds');
+  //   setInterval(internals.processCronQueries, 60 * 1000);
+  //   setTimeout(internals.processCronQueries, 1000);
+  //   setInterval(huntAPIs.processHuntJobs, 10000);
+  // } else if (!Config.get('multiES', false)) {
+  //   const info = await Db.getQueriesNode();
+  //   if (info.node === undefined) {
+  //     console.log('WARNING - No cronQueries=true found, cron/hunts might be broken');
+  //   } else if (Date.now() - info.updateTime > 2 * 60 * 1000) {
+  //     console.log(`WARNING - cronQueries=true node '${info.node}' hasn't checked in lately, cron/hunts might be broken`);
+  //   }
+  // }
 
-  let server;
-  if (Config.isHTTPS()) {
-    const cryptoOption = require('crypto').constants.SSL_OP_NO_TLSv1;
-    server = https.createServer({
-      key: Config.keyFileData,
-      cert: Config.certFileData,
-      secureOptions: cryptoOption
-    }, app);
-    Config.setServerToReloadCerts(server, cryptoOption);
-  } else {
-    server = http.createServer(app);
-  }
+  // let server;
+  // if (Config.isHTTPS()) {
+  //   const cryptoOption = require('crypto').constants.SSL_OP_NO_TLSv1;
+  //   server = https.createServer({
+  //     key: Config.keyFileData,
+  //     cert: Config.certFileData,
+  //     secureOptions: cryptoOption
+  //   }, app);
+  //   Config.setServerToReloadCerts(server, cryptoOption);
+  // } else {
+  //   server = http.createServer(app);
+  // }
 
-  const viewHost = Config.get('viewHost', undefined);
-  if (internals.userNameHeader !== undefined && viewHost !== 'localhost' && viewHost !== '127.0.0.1') {
-    console.log('SECURITY WARNING - when userNameHeader is set, viewHost should be localhost or use iptables');
-  }
+  // const viewHost = Config.get('viewHost', undefined);
+  // if (internals.userNameHeader !== undefined && viewHost !== 'localhost' && viewHost !== '127.0.0.1') {
+  //   console.log('SECURITY WARNING - when userNameHeader is set, viewHost should be localhost or use iptables');
+  // }
 
-  server
-    .on('error', function (e) {
-      console.log("ERROR - couldn't listen on port", Config.get('viewPort', '8005'), 'is viewer already running?');
-      process.exit(1);
-    })
-    .on('listening', function (e) {
-      console.log('Express server listening on port %d in %s mode', server.address().port, app.settings.env);
-    })
-    .listen(Config.get('viewPort', '8005'), viewHost)
-    .setTimeout(20 * 60 * 1000);
+  // server
+  //   .on('error', function (e) {
+  //     console.log("ERROR - couldn't listen on port", Config.get('viewPort', '8005'), 'is viewer already running?');
+  //     process.exit(1);
+  //   })
+  //   .on('listening', function (e) {
+  //     console.log('Express server listening on port %d in %s mode', server.address().port, app.settings.env);
+  //   })
+  //   .listen(Config.get('viewPort', '8005'), viewHost)
+  //   .setTimeout(20 * 60 * 1000);
 }
 
 // ============================================================================
@@ -2490,26 +2477,26 @@ process.on('unhandledRejection', (reason, p) => {
   // application specific logging, throwing an error, or other logic here
 });
 
-// Db.initialize({
-//   host: internals.elasticBase,
-//   prefix: internals.prefix,
-//   usersHost: Config.getArray('usersElasticsearch', ','),
-//   // The default for usersPrefix should be '' if this is a multiviewer, otherwise Db.initialize will figure out
-//   usersPrefix: Config.get('usersPrefix', Config.get('multiES', false) ? '' : undefined),
-//   nodeName: Config.nodeName(),
-//   hostName: Config.hostName(),
-//   esClientKey: Config.get('esClientKey', null),
-//   esClientCert: Config.get('esClientCert', null),
-//   esClientKeyPass: Config.get('esClientKeyPass', null),
-//   multiES: Config.get('multiES', false),
-//   insecure: Config.insecure,
-//   ca: Config.getCaTrustCerts(Config.nodeName()),
-//   requestTimeout: Config.get('elasticsearchTimeout', 300),
-//   esProfile: Config.esProfile,
-//   debug: Config.debug,
-//   esApiKey: Config.get('elasticsearchAPIKey', null),
-//   usersEsApiKey: Config.get('usersElasticsearchAPIKey', null),
-//   esBasicAuth: Config.get('elasticsearchBasicAuth', null),
-//   usersEsBasicAuth: Config.get('usersElasticsearchBasicAuth', null),
-//   cronQueries: Config.get('cronQueries', false)
-// }, main);
+Db.initialize({
+  host: internals.elasticBase,
+  prefix: internals.prefix,
+  usersHost: Config.getArray('usersElasticsearch', ','),
+  // The default for usersPrefix should be '' if this is a multiviewer, otherwise Db.initialize will figure out
+  usersPrefix: Config.get('usersPrefix', Config.get('multiES', false) ? '' : undefined),
+  nodeName: Config.nodeName(),
+  hostName: Config.hostName(),
+  esClientKey: Config.get('esClientKey', null),
+  esClientCert: Config.get('esClientCert', null),
+  esClientKeyPass: Config.get('esClientKeyPass', null),
+  multiES: Config.get('multiES', false),
+  insecure: Config.insecure,
+  ca: Config.getCaTrustCerts(Config.nodeName()),
+  requestTimeout: Config.get('elasticsearchTimeout', 300),
+  esProfile: Config.esProfile,
+  debug: Config.debug,
+  esApiKey: Config.get('elasticsearchAPIKey', null),
+  usersEsApiKey: Config.get('usersElasticsearchAPIKey', null),
+  esBasicAuth: Config.get('elasticsearchBasicAuth', null),
+  usersEsBasicAuth: Config.get('usersElasticsearchBasicAuth', null),
+  cronQueries: Config.get('cronQueries', false)
+}, main);

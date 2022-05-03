@@ -21,7 +21,7 @@
 const os = require('os');
 const fs = require('fs');
 const async = require('async');
-const { Client } = require('@elastic/elasticsearch');
+// const { Client } = require('@elastic/elasticsearch');
 const User = require('../common/user');
 
 const internals = {
@@ -62,166 +62,166 @@ function checkURLs (nodes) {
 }
 
 exports.initialize = async (info, cb) => {
-  internals.multiES = info.multiES === 'true' || info.multiES === true || false;
-  internals.debug = info.debug || 0;
+  // internals.multiES = info.multiES === 'true' || info.multiES === true || false;
+  // internals.debug = info.debug || 0;
 
-  delete info.multiES;
-  delete info.debug;
+  // delete info.multiES;
+  // delete info.debug;
 
-  internals.info = info;
+  // internals.info = info;
 
-  checkURLs(info.host);
-  checkURLs(info.usersHost);
+  // checkURLs(info.host);
+  // checkURLs(info.usersHost);
 
-  if (info.prefix === '') {
-    internals.prefix = '';
-  } else if (info.prefix && info.prefix.charAt(info.prefix.length - 1) !== '_') {
-    internals.prefix = info.prefix + '_';
-  } else {
-    internals.prefix = info.prefix || '';
-  }
+  // if (info.prefix === '') {
+  //   internals.prefix = '';
+  // } else if (info.prefix && info.prefix.charAt(info.prefix.length - 1) !== '_') {
+  //   internals.prefix = info.prefix + '_';
+  // } else {
+  //   internals.prefix = info.prefix || '';
+  // }
 
-  if (info.usersPrefix === '') {
-    internals.usersPrefix = '';
-  } else if (info.usersPrefix && info.usersPrefix.charAt(info.usersPrefix.length - 1) !== '_') {
-    internals.usersPrefix = info.usersPrefix + '_';
-  } else {
-    internals.usersPrefix = info.usersPrefix || internals.prefix;
-  }
+  // if (info.usersPrefix === '') {
+  //   internals.usersPrefix = '';
+  // } else if (info.usersPrefix && info.usersPrefix.charAt(info.usersPrefix.length - 1) !== '_') {
+  //   internals.usersPrefix = info.usersPrefix + '_';
+  // } else {
+  //   internals.usersPrefix = info.usersPrefix || internals.prefix;
+  // }
 
-  internals.nodeName = info.nodeName;
-  delete info.nodeName;
-  internals.hostName = info.hostName;
-  delete info.hostName;
+  // internals.nodeName = info.nodeName;
+  // delete info.nodeName;
+  // internals.hostName = info.hostName;
+  // delete info.hostName;
 
-  internals.esProfile = info.esProfile || false;
-  delete info.esProfile;
+  // internals.esProfile = info.esProfile || false;
+  // delete info.esProfile;
 
-  const esSSLOptions = { rejectUnauthorized: !internals.info.insecure, ca: internals.info.ca };
-  if (info.esClientKey) {
-    esSSLOptions.key = fs.readFileSync(info.esClientKey);
-    esSSLOptions.cert = fs.readFileSync(info.esClientCert);
-    if (info.esClientKeyPass) {
-      esSSLOptions.passphrase = info.esClientKeyPass;
-    }
-  }
+  // const esSSLOptions = { rejectUnauthorized: !internals.info.insecure, ca: internals.info.ca };
+  // if (info.esClientKey) {
+  //   esSSLOptions.key = fs.readFileSync(info.esClientKey);
+  //   esSSLOptions.cert = fs.readFileSync(info.esClientCert);
+  //   if (info.esClientKeyPass) {
+  //     esSSLOptions.passphrase = info.esClientKeyPass;
+  //   }
+  // }
 
-  const esClientOptions = {
-    node: internals.info.host,
-    maxRetries: 2,
-    requestTimeout: (parseInt(info.requestTimeout, 10) + 30) * 1000 || 330000,
-    ssl: esSSLOptions
-  };
+  // const esClientOptions = {
+  //   node: internals.info.host,
+  //   maxRetries: 2,
+  //   requestTimeout: (parseInt(info.requestTimeout, 10) + 30) * 1000 || 330000,
+  //   ssl: esSSLOptions
+  // };
 
-  if (info.esApiKey) {
-    esClientOptions.auth = {
-      apiKey: info.esApiKey
-    };
-  } else if (info.esBasicAuth) {
-    let basicAuth = info.esBasicAuth;
-    if (!basicAuth.includes(':')) {
-      basicAuth = Buffer.from(basicAuth, 'base64').toString();
-    }
-    basicAuth = basicAuth.split(':');
-    esClientOptions.auth = {
-      username: basicAuth[0],
-      password: basicAuth[1]
-    };
-  }
+  // if (info.esApiKey) {
+  //   esClientOptions.auth = {
+  //     apiKey: info.esApiKey
+  //   };
+  // } else if (info.esBasicAuth) {
+  //   let basicAuth = info.esBasicAuth;
+  //   if (!basicAuth.includes(':')) {
+  //     basicAuth = Buffer.from(basicAuth, 'base64').toString();
+  //   }
+  //   basicAuth = basicAuth.split(':');
+  //   esClientOptions.auth = {
+  //     username: basicAuth[0],
+  //     password: basicAuth[1]
+  //   };
+  // }
 
-  internals.client7 = new Client(esClientOptions);
+  // // internals.client7 = new Client(esClientOptions);
 
-  if (info.usersHost) {
-    User.initialize({
-      insecure: info.insecure,
-      ca: info.ca,
-      requestTimeout: info.requestTimeout,
-      node: info.usersHost,
-      clientKey: info.esClientKey,
-      clientCert: info.esClientCert,
-      clientKeyPass: info.esClientKeyPass,
-      apiKey: info.usersEsApiKey,
-      basicAuth: info.usersEsBasicAuth,
-      prefix: internals.usersPrefix,
-      debug: internals.debug
-    });
-  } else {
-    User.initialize({
-      insecure: info.insecure,
-      ca: info.ca,
-      requestTimeout: info.requestTimeout,
-      node: info.host,
-      clientKey: info.esClientKey,
-      clientCert: info.esClientCert,
-      clientKeyPass: info.esClientKeyPass,
-      apiKey: info.esApiKey,
-      basicAuth: info.esBasicAuth,
-      prefix: internals.prefix,
-      debug: internals.debug,
-      readOnly: internals.multiES
-    });
-  }
+  // if (info.usersHost) {
+  //   User.initialize({
+  //     insecure: info.insecure,
+  //     ca: info.ca,
+  //     requestTimeout: info.requestTimeout,
+  //     node: info.usersHost,
+  //     clientKey: info.esClientKey,
+  //     clientCert: info.esClientCert,
+  //     clientKeyPass: info.esClientKeyPass,
+  //     apiKey: info.usersEsApiKey,
+  //     basicAuth: info.usersEsBasicAuth,
+  //     prefix: internals.usersPrefix,
+  //     debug: internals.debug
+  //   });
+  // } else {
+  //   User.initialize({
+  //     insecure: info.insecure,
+  //     ca: info.ca,
+  //     requestTimeout: info.requestTimeout,
+  //     node: info.host,
+  //     clientKey: info.esClientKey,
+  //     clientCert: info.esClientCert,
+  //     clientKeyPass: info.esClientKeyPass,
+  //     apiKey: info.esApiKey,
+  //     basicAuth: info.esBasicAuth,
+  //     prefix: internals.prefix,
+  //     debug: internals.debug,
+  //     readOnly: internals.multiES
+  //   });
+  // }
 
-  internals.usersClient7 = User.getClient();
+  // internals.usersClient7 = User.getClient();
 
-  // Replace tag implementation
-  if (internals.multiES) {
-    exports.isLocalView = (node, yesCB, noCB) => { return noCB(); };
-    internals.prefix = 'MULTIPREFIX_';
-  }
+  // // Replace tag implementation
+  // if (internals.multiES) {
+  //   exports.isLocalView = (node, yesCB, noCB) => { return noCB(); };
+  //   internals.prefix = 'MULTIPREFIX_';
+  // }
 
-  if (internals.debug) {
-    console.log(`prefix:${internals.prefix} usersPrefix:${internals.usersPrefix}`);
-  }
+  // if (internals.debug) {
+  //   console.log(`prefix:${internals.prefix} usersPrefix:${internals.usersPrefix}`);
+  // }
 
-  // Update aliases cache so -shrink/-reindex works
-  if (internals.nodeName !== undefined) {
-    exports.getAliasesCache(['sessions2-*', 'sessions3-*']);
-    setInterval(() => { exports.getAliasesCache(['sessions2-*', 'sessions3-*']); }, 2 * 60 * 1000);
-  }
+  // // Update aliases cache so -shrink/-reindex works
+  // if (internals.nodeName !== undefined) {
+  //   exports.getAliasesCache(['sessions2-*', 'sessions3-*']);
+  //   setInterval(() => { exports.getAliasesCache(['sessions2-*', 'sessions3-*']); }, 2 * 60 * 1000);
+  // }
 
-  // if there's a user's db and cronQueries is set, sync shortcuts from user's
-  // to local db so they can be used for sessions search
-  // (can't use remote db for searching via shortcuts)
-  internals.localShortcutsIndex = fixIndex('lookups');
-  if (internals.info.usersHost && internals.info.cronQueries) {
-    internals.remoteShortcutsIndex = `${internals.usersPrefix}lookups`;
-    // make sure the remote es is not the same as local es
-    if (info.host !== info.usersHost && info.prefix !== info.usersPrefix) {
-      // only need to sync and update if the es' are different
-      internals.doShortcutsUpdates = true; // for updating if editing shortcuts locally
-      await initialShortcutsSyncToRemote(); // determine if shorcuts have been synced
-      exports.updateLocalShortcuts(); // immediately update shortcuts
-      setInterval(() => { exports.updateLocalShortcuts(); }, 60000); // and every minute
-    }
-  } else if (internals.info.usersHost && internals.usersPrefix !== undefined) {
-    internals.remoteShortcutsIndex = `${internals.usersPrefix}lookups`;
-  } else { // there is no remote shorcuts index, just set it to local
-    internals.remoteShortcutsIndex = internals.localShortcutsIndex;
-  }
+  // // if there's a user's db and cronQueries is set, sync shortcuts from user's
+  // // to local db so they can be used for sessions search
+  // // (can't use remote db for searching via shortcuts)
+  // internals.localShortcutsIndex = fixIndex('lookups');
+  // if (internals.info.usersHost && internals.info.cronQueries) {
+  //   internals.remoteShortcutsIndex = `${internals.usersPrefix}lookups`;
+  //   // make sure the remote es is not the same as local es
+  //   if (info.host !== info.usersHost && info.prefix !== info.usersPrefix) {
+  //     // only need to sync and update if the es' are different
+  //     internals.doShortcutsUpdates = true; // for updating if editing shortcuts locally
+  //     await initialShortcutsSyncToRemote(); // determine if shorcuts have been synced
+  //     exports.updateLocalShortcuts(); // immediately update shortcuts
+  //     setInterval(() => { exports.updateLocalShortcuts(); }, 60000); // and every minute
+  //   }
+  // } else if (internals.info.usersHost && internals.usersPrefix !== undefined) {
+  //   internals.remoteShortcutsIndex = `${internals.usersPrefix}lookups`;
+  // } else { // there is no remote shorcuts index, just set it to local
+  //   internals.remoteShortcutsIndex = internals.localShortcutsIndex;
+  // }
 
-  if (internals.debug > 1) {
-    console.log(`remoteShortcutsIndex: ${internals.remoteShortcutsIndex} localShortcutsIndex: ${internals.localShortcutsIndex}`);
-  }
+  // if (internals.debug > 1) {
+  //   console.log(`remoteShortcutsIndex: ${internals.remoteShortcutsIndex} localShortcutsIndex: ${internals.localShortcutsIndex}`);
+  // }
 
-  try {
-    const { body: data } = await internals.client7.info();
-    if (data.version.distribution === 'opensearch') {
-      if (data.version.number.match(/^[0]/)) {
-        console.log(`ERROR - Opensearch ${data.version.number} not supported, Opensearch 1.0.0 or later required.`);
-        process.exit();
-      }
-    } else {
-      if (data.version.number.match(/^([0-6]|7\.[0-9]\.|8)/)) {
-        console.log(`ERROR - ES ${data.version.number} not supported, ES 7.10.0 or later required.`);
-        process.exit();
-      }
-    }
-    return cb();
-  } catch (err) {
-    console.log('ERROR - getting ES client info, is ES running?', err);
-    process.exit(1);
-  }
+  // try {
+  //   const { body: data } = await internals.client7.info();
+  //   if (data.version.distribution === 'opensearch') {
+  //     if (data.version.number.match(/^[0]/)) {
+  //       console.log(`ERROR - Opensearch ${data.version.number} not supported, Opensearch 1.0.0 or later required.`);
+  //       process.exit();
+  //     }
+  //   } else {
+  //     if (data.version.number.match(/^([0-6]|7\.[0-9]\.|8)/)) {
+  //       console.log(`ERROR - ES ${data.version.number} not supported, ES 7.10.0 or later required.`);
+  //       process.exit();
+  //     }
+  //   }
+  //   return cb();
+  // } catch (err) {
+  //   console.log('ERROR - getting ES client info, is ES running?', err);
+  //   process.exit(1);
+  // }
 };
 
 /// ///////////////////////////////////////////////////////////////////////////////
